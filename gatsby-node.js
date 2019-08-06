@@ -7,37 +7,54 @@
 // You can delete this file if you're not using it
 const path = require('path');
 
-exports.createPages = ({ boundActionCreators, graphql }) => {
-  const { createPage } = boundActionCreators;
+const templatesCallback = (props) => {
+  const {
+    query, boundActionCreators, graphql,
+  } = props;
+  const {
+    createPage,
+  } = boundActionCreators;
+  return graphql(query)
+    .then((res) => {
+      const {
+        data: { allMarkdownRemark: { edges: data } },
+        errors,
+      } = res;
+      if (errors) {
+        return Promise.reject(errors);
+      }
+      data.forEach(({ node }) => {
+        const { sysTemplate, sysPath } = node.frontmatter;
+        const cTemplatePath = `src/templates/${sysTemplate}.jsx`;
+        createPage({
+          path: sysPath,
+          component: path.resolve(cTemplatePath),
+        });
+      });
+      return true;
+    });
+};
 
-  const postTemplate = path.resolve('src/templates/post.jsx');
-
-  return graphql(`{
-    allMarkdownRemark {
+const templates = {
+  basicPages: props => templatesCallback({
+    query: `{
+    allMarkdownRemark(
+      filter: { frontmatter: { sysTemplate: { ne: "" } } }
+     ) {
       edges {
         node {
-          html
-          id
           frontmatter {
-            path
-            title
+            sysTemplate
+            sysPath
           }
         }
       }
     }
-  }`)
-    .then((res) => {
-      if (res.errors) {
-        return Promise.reject(res.errors);
-      }
-
-      res.data.allMarkdownRemark.edges.forEach(({ node }) => {
-        createPage({
-          path: node.frontmatter.path,
-          component: postTemplate,
-        });
-      });
-
-      return true;
-    });
+  }`,
+    ...props,
+  }),
 };
+
+exports.createPages = props => Promise.all([
+  templates.basicPages(props),
+]);

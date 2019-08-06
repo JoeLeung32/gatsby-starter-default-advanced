@@ -11,5 +11,9 @@
     "airbnb",
     "eslint:recommended",
     "plugin:react/recommended"
-  ]
+  ],
+  "globals": {
+    "document": true,
+    "window": true
+  }
 }

@@ -57,7 +57,7 @@ export const pageQuery = graphql`
           id
           frontmatter {
             title
-            path
+            sysPath
             draft
             date
           }

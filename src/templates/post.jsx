@@ -26,10 +26,10 @@ Template.defaultProps = {
 
 export const postQuery = graphql`
   query BlogPostByPath($path: String!) {
-    markdownRemark(frontmatter: { path: { eq: $path } }) {
+    markdownRemark(frontmatter: { sysPath: { eq: $path } }) {
       html
       frontmatter {
-        path
+        sysPath
         title
       }
     }

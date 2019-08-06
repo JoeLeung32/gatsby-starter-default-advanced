@@ -5,3 +5,5 @@
  */
 
 // You can delete this file if you're not using it
+import './static/styles/bootstrap-reboot.min.scss';
+import './static/styles/global.scss';
