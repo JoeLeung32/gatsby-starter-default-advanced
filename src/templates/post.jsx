@@ -2,7 +2,16 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'gatsby';
 
+import { Container, Button } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+
 import SEO from '../components/seo';
+
+const useStyles = makeStyles((theme) => ({
+  button: {
+    margin: theme.spacing(1),
+  },
+}));
 
 export default function Template(props) {
   const { data } = props;
@@ -10,13 +19,17 @@ export default function Template(props) {
   if (!post) {
     return null;
   }
+  const classes = useStyles();
   return (
-    <>
+    <Container fixed>
       <SEO title={post.frontmatter.title} />
       <div>
         <h1>{post.frontmatter.title}</h1>
+        <Button variant="contained" color="primary" className={classes.button}>
+          Primary
+        </Button>
       </div>
-    </>
+    </Container>
   );
 }
 
