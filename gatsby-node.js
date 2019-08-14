@@ -61,11 +61,9 @@ const templatesCallback = (props) => {
                 ...fields,
                 refAdaptation: cleanedUpAdaptation,
                 refContentId: id,
-                refPath: sysPath,
-                root: `/${pageDataContextRootPathData.join('/')}`,
+                relativeURL: `/${pageDataContextRootPathData.join('/')}`,
               },
             };
-            console.log(createPageData);
             if (name.split('.').includes('index')) {
               /*
                * The markdown filename match case:

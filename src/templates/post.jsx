@@ -29,10 +29,9 @@ Template.defaultProps = {
 };
 
 export const postQuery = graphql`
-  query BlogPostByPath($langKey: String!, $refPath: String!) {
+  query BlogPostByPath($refContentId: String!) {
     markdownRemark(
-      fields: { langKey: { eq: $langKey } },
-      frontmatter: { sysPath: { eq: $refPath } },
+      id: { eq: $refContentId }
     ) {
       html
       frontmatter {
