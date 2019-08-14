@@ -4,8 +4,12 @@ import { graphql } from 'gatsby';
 
 import SEO from '../components/seo';
 
-export default function Template({ data }) {
+export default function Template(props) {
+  const { data } = props;
   const { markdownRemark: post } = data;
+  if (!post) {
+    return null;
+  }
   return (
     <>
       <SEO title={post.frontmatter.title} />
@@ -25,8 +29,11 @@ Template.defaultProps = {
 };
 
 export const postQuery = graphql`
-  query BlogPostByPath($path: String!) {
-    markdownRemark(frontmatter: { sysPath: { eq: $path } }) {
+  query BlogPostByPath($langKey: String!, $refPath: String!) {
+    markdownRemark(
+      fields: { langKey: { eq: $langKey } },
+      frontmatter: { sysPath: { eq: $refPath } },
+    ) {
       html
       frontmatter {
         sysPath

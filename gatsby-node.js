@@ -27,10 +27,10 @@ const templatesCallback = (props) => {
         return Promise.reject(errors);
       }
       data.forEach(({
-                      node: {
-                        id, fields, frontmatter, parent,
-                      },
-                    }) => {
+        node: {
+          id, fields, frontmatter, parent,
+        },
+      }) => {
         const { langKey, slug } = fields;
         const { sysTemplate, sysPath } = frontmatter;
         const { id: fileId, name } = parent;
@@ -41,8 +41,19 @@ const templatesCallback = (props) => {
           envDataAdaptationList.forEach((adaptation) => {
             const cleanedUpAdaptation = adaptation.trim();
             const pageDataComponentPath = `src/templates/${sysTemplate}.jsx`;
-            const pageDataPathData = [cleanedUpAdaptation, langKey, sysPath];
-            const pageDataContextRootPathData = [cleanedUpAdaptation, langKey];
+            const pageDataPathData = [];
+            const pageDataContextRootPathData = [];
+            if (cleanedUpAdaptation) {
+              pageDataPathData.push(cleanedUpAdaptation);
+              pageDataContextRootPathData.push(cleanedUpAdaptation);
+            }
+            if (langKey) {
+              pageDataPathData.push(langKey);
+              pageDataContextRootPathData.push(langKey);
+            }
+            if (sysPath) {
+              pageDataPathData.push(sysPath);
+            }
             const createPageData = {
               path: `/${pageDataPathData.join('/')}`,
               component: path.resolve(pageDataComponentPath),
@@ -50,9 +61,11 @@ const templatesCallback = (props) => {
                 ...fields,
                 refAdaptation: cleanedUpAdaptation,
                 refContentId: id,
+                refPath: sysPath,
                 root: `/${pageDataContextRootPathData.join('/')}`,
               },
             };
+            console.log(createPageData);
             if (name.split('.').includes('index')) {
               /*
                * The markdown filename match case:

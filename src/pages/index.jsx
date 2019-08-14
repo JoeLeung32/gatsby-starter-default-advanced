@@ -5,6 +5,7 @@ import { graphql, Link } from 'gatsby';
 import Layout from '../components/layout';
 import Image from '../components/image';
 import SEO from '../components/seo';
+import JS from '../../static/javascripts/globle';
 
 const IndexPage = ({ data }) => {
   const { allMarkdownRemark: edges } = data;
@@ -22,16 +23,22 @@ const IndexPage = ({ data }) => {
 
       <h2>Index</h2>
       <ul>
-        {edges.edges.map(post => (
-          <li key={post.node.id}>
-            <Link
-              key={post.node.id}
-              to={post.node.frontmatter.path}
-            >
-              {post.node.frontmatter.title}
-            </Link>
-          </li>
-        ))}
+        {edges.edges.map((post) => {
+          const nextUrl = JS.makeURLWithPathname(
+            post.node.fields.langKey,
+            post.node.frontmatter.sysPath,
+          );
+          return (
+            <li key={post.node.id}>
+              <Link
+                key={post.node.id}
+                to={nextUrl}
+              >
+                {post.node.frontmatter.title}
+              </Link>
+            </li>
+          );
+        })}
       </ul>
     </Layout>
   );
@@ -55,6 +62,10 @@ export const pageQuery = graphql`
       edges {
         node {
           id
+          fields {
+            langKey
+            slug
+          }
           frontmatter {
             title
             sysPath
