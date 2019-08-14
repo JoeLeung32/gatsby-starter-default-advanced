@@ -5,6 +5,9 @@
  */
 
 // You can delete this file if you're not using it
+require('dotenv').config(
+  { path: `./.env.${process.env.NODE_ENV}` },
+);
 const path = require('path');
 
 const templatesCallback = (props) => {
@@ -23,38 +26,93 @@ const templatesCallback = (props) => {
       if (errors) {
         return Promise.reject(errors);
       }
-      data.forEach(({ node }) => {
-        const { sysTemplate, sysPath } = node.frontmatter;
-        const cTemplatePath = `src/templates/${sysTemplate}.jsx`;
-        createPage({
-          path: sysPath,
-          component: path.resolve(cTemplatePath),
-        });
+      data.forEach(({
+                      node: {
+                        id, fields, frontmatter, parent,
+                      },
+                    }) => {
+        const { langKey, slug } = fields;
+        const { sysTemplate, sysPath } = frontmatter;
+        const { id: fileId, name } = parent;
+        const markdownFilenameData = name.split('.');
+        const envDataAdaptation = process.env.ACN_ADAPTATION || '';
+        const envDataAdaptationList = envDataAdaptation.split(',');
+        if (envDataAdaptationList.length) {
+          envDataAdaptationList.forEach((adaptation) => {
+            const cleanedUpAdaptation = adaptation.trim();
+            const pageDataComponentPath = `src/templates/${sysTemplate}.jsx`;
+            const pageDataPathData = [cleanedUpAdaptation, langKey, sysPath];
+            const pageDataContextRootPathData = [cleanedUpAdaptation, langKey];
+            const createPageData = {
+              path: `/${pageDataPathData.join('/')}`,
+              component: path.resolve(pageDataComponentPath),
+              context: {
+                ...fields,
+                refAdaptation: cleanedUpAdaptation,
+                refContentId: id,
+                root: `/${pageDataContextRootPathData.join('/')}`,
+              },
+            };
+            if (name.split('.').includes('index')) {
+              /*
+               * The markdown filename match case:
+               * -> index.__LangKey__.md
+               * */
+              createPage(createPageData);
+            } else if (
+              markdownFilenameData.length
+              && markdownFilenameData[0] === cleanedUpAdaptation
+            ) {
+              /*
+               * The markdown filename match case (A and B):
+               * -> __Adaptation__ is equal to adaptation
+               * -> __Adaptation__.__LangKey__.md
+               * */
+              createPage(createPageData);
+            }
+          });
+        }
       });
       return true;
     });
 };
 
 const templates = {
-  basicPages: props => templatesCallback({
-    query: `{
-    allMarkdownRemark(
-      filter: { frontmatter: { sysTemplate: { ne: "" } } }
-     ) {
-      edges {
-        node {
-          frontmatter {
-            sysTemplate
-            sysPath
+  basicPages: (props) => templatesCallback({
+    query: `
+{
+  allMarkdownRemark(
+    filter: {
+      frontmatter: {sysTemplate: {ne: ""}}
+    }, 
+    sort: {fields: frontmatter___sysPath}
+  ) {
+    edges {
+      node {
+        id
+        fields {
+          langKey
+          slug
+        }
+        frontmatter {
+          sysTemplate
+          sysPath
+        }
+        parent {
+          ... on File {
+            id
+            name
           }
         }
       }
     }
-  }`,
+  }
+}
+  `,
     ...props,
   }),
 };
 
-exports.createPages = props => Promise.all([
+exports.createPages = (props) => Promise.all([
   templates.basicPages(props),
 ]);

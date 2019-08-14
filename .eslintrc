@@ -5,7 +5,9 @@
     "linebreak-style": [
       0,
       "windows"
-    ]
+    ],
+    "react/no-danger": "off",
+    "react/no-danger-with-children": "error",
   },
   "extends": [
     "airbnb",
@@ -14,6 +16,7 @@
   ],
   "globals": {
     "document": true,
-    "window": true
+    "window": true,
+    "navigator": true
   }
 }
