@@ -99,12 +99,18 @@ module.exports = {
         autoplay: false,
         loop: false,
       },
+    }, {
+      resolve: 'gatsby-plugin-material-ui',
+      options: {
+        disableAutoprefixing: false,
+        disableMinification: false,
+      },
     },
     {
       resolve: 'gatsby-plugin-i18n',
       options: {
         langKeyForNull: 'any',
-        langKeyDefault: 'en',
+        langKeyDefault: 'zh',
         useLangKeyLayout: false,
       },
     },
