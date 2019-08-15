@@ -6,12 +6,10 @@ const defaultEventParam = {
   value: 1,
 };
 
-const condition = (conditions) => {
-  return !!((typeof navigator !== 'undefined' || typeof window !== 'undefined')
+const condition = (conditions) => !!((typeof navigator !== 'undefined' || typeof window !== 'undefined')
     && !(navigator.doNotTrack === '1' || window.doNotTrack === '1')
     && typeof window.gtag !== 'undefined'
     && conditions);
-};
 
 module.exports = {
   sendTo: (recipient) => {

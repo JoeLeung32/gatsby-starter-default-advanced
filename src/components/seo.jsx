@@ -11,7 +11,7 @@ import Helmet from 'react-helmet';
 import { useStaticQuery, graphql } from 'gatsby';
 
 function SEO({
-  description, lang, meta, title,
+  description, lang, meta, title, bodyAttributes,
 }) {
   const { site } = useStaticQuery(
     graphql`
@@ -34,6 +34,9 @@ function SEO({
       htmlAttributes={{
         lang,
       }}
+      bodyAttributes={
+        bodyAttributes
+      }
       title={title}
       titleTemplate={`%s | ${site.siteMetadata.title}`}
       meta={[
@@ -78,9 +81,11 @@ SEO.defaultProps = {
   lang: 'en',
   meta: [],
   description: '',
+  bodyAttributes: {},
 };
 
 SEO.propTypes = {
+  bodyAttributes: PropTypes.oneOfType([PropTypes.object]),
   description: PropTypes.string,
   lang: PropTypes.string,
   meta: PropTypes.arrayOf(PropTypes.object),
